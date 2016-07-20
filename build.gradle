@@ -14,7 +14,7 @@ sourceCompatibility = 1.8
 // Dependencies
 //--------------------
 repositories {
-    flatDir(dirs: '../kafka/clients/build/libs/')
+    flatDir(dirs: '/home/lafranll/prjs/kafka/clients/build/libs/')
     mavenCentral()
 }
 dependencies {
