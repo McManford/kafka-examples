@@ -1,17 +1,19 @@
 package kafka.examples;
 
-import kafka.examples.serializers.AvroSerializer;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.serialization.IntegerSerializer;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+
+import kafka.examples.serializers.AvroSerializer;
+
 
 public class ProducerAvro extends Thread
 {
@@ -47,10 +49,13 @@ public class ProducerAvro extends Thread
         Date now = Calendar.getInstance().getTime();
         System.out.println(this.df.format(now) + " " + logTag + ": Mode: " + (isAsync ? "Async" : "Sync"));
 
-        //List<PartitionInfo> partitionInfoList = producer.partitionsFor(topic);
-        //for (PartitionInfo partInfo : partitionInfoList) {
-        //    System.out.println(this.df.format(now) + " " + logTag + ": Rack: " + partInfo.leader().rack());
-        //}
+        List<PartitionInfo> partitionInfoList = producer.partitionsFor(topic);
+        for (PartitionInfo partInfo : partitionInfoList) {
+            System.out.println(this.df.format(now) + " " + logTag + ": Partition: " + partInfo.partition());
+            System.out.println(this.df.format(now) + " " + logTag + ": Leader Id: " + partInfo.leader().id());
+            // rack added in 0.10.0.1
+            //System.out.println(this.df.format(now) + " " + logTag + ":Leader Rack: " + partInfo.leader().rack());
+        }
 
         int messageNo = 1;
         while(true)
@@ -68,11 +73,13 @@ public class ProducerAvro extends Thread
 
             long startTime = System.currentTimeMillis();
             if (isAsync)
-            { // Send asynchronously
+            {
+                // Send asynchronously
                 producer.send(producerRecord, new DemoCallBack(logTag, startTime, messageNo, strValue));
             }
             else
-            { // Send synchronously
+            {
+                // Send synchronously
                 try
                 {
                     Future<RecordMetadata> f = producer.send(producerRecord);
@@ -89,7 +96,8 @@ public class ProducerAvro extends Thread
                 {
                     e.printStackTrace();
                 }
-                catch (ExecutionException e) {
+                catch (ExecutionException e)
+                {
                     e.printStackTrace();
                 }
             }

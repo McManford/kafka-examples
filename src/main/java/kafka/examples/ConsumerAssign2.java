@@ -1,11 +1,12 @@
 package kafka.examples;
 
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.common.TopicPartition;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
+
 
 public class ConsumerAssign2 extends Thread
 {

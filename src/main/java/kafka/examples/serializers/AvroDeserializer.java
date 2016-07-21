@@ -1,6 +1,9 @@
 package kafka.examples.serializers;
 
-import kafka.examples.DatabusMessage;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Map;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
@@ -9,9 +12,7 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
+import kafka.examples.DatabusMessage;
 
 
 public class AvroDeserializer extends AbstractAvroSerDeser implements Deserializer<DatabusMessage>
@@ -71,7 +72,6 @@ public class AvroDeserializer extends AbstractAvroSerDeser implements Deserializ
             DatabusMessage message = new DatabusMessage(headers, payload);
             return message;
         } catch (IOException | RuntimeException e) {
-            // avro deserialization may throw AvroRuntimeException, NullPointerException, etc
             throw new SerializationException("Error deserializing Avro message for id " + id, e);
         }
 

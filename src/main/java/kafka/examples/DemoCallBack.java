@@ -1,12 +1,12 @@
 package kafka.examples;
 
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.RecordMetadata;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 
 public class DemoCallBack implements Callback {
@@ -38,9 +38,10 @@ public class DemoCallBack implements Callback {
     public void onCompletion(RecordMetadata metadata, Exception exception)
     {
         long elapsedTime = System.currentTimeMillis() - startTime;
+        Date now = Calendar.getInstance().getTime();
         if (metadata != null)
         {
-            Date now = Calendar.getInstance().getTime();
+
             System.out.println(this.df.format(now) + " " + logTag + ":" +
                     " Sent: {" + messageKey + ":" + messageValue + "}" +
                     ", partition(" + metadata.partition() + ")" +
@@ -48,7 +49,8 @@ public class DemoCallBack implements Callback {
         }
         else
         {
-            System.out.println("Producer1: ERROR sending message. Ex: " + exception.getMessage());
+            System.out.println(this.df.format(now) + " " + logTag + ":" +
+                    " ERROR sending message. Ex: " + exception.getMessage());
             exception.printStackTrace();
         }
     }

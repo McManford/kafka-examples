@@ -1,7 +1,8 @@
 package kafka.examples;
 
 
-public class ConsumerProducerDemo1 {
+public class ConsumerProducerDemo1
+{
     public static void main(String[] args)
     {
         boolean isAsync = args.length == 0 || !args[0].trim().equalsIgnoreCase("sync");

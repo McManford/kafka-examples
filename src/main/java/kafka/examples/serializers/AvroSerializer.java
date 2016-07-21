@@ -1,6 +1,10 @@
 package kafka.examples.serializers;
 
-import kafka.examples.DatabusMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Map;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -8,15 +12,10 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
-
-import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.errors.SerializationException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
+import kafka.examples.DatabusMessage;
 
 
 public class AvroSerializer extends AbstractAvroSerDeser implements Serializer<DatabusMessage>
@@ -35,18 +34,12 @@ public class AvroSerializer extends AbstractAvroSerDeser implements Serializer<D
     @Override
     public byte[] serialize(String topic, DatabusMessage message)
     {
-        Schema schema = null;
-        // null needs to treated specially since the client most likely just wants to send
-        // an individual null value instead of making the subject a null type. Also, null in
-        // Kafka has a special meaning for deletion in a topic with the compact retention policy.
-        // Therefore, we will bypass recordSchema registration and return a null value in Kafka, instead
-        // of an Avro encoded null.
         if (message == null) {
             return null;
         }
 
         try {
-            schema = getSchema();
+            Schema schema = getSchema();
             GenericRecord databusValue = new GenericData.Record(schema);
 
             databusValue.put("headers", message.getHeaders());
@@ -68,8 +61,6 @@ public class AvroSerializer extends AbstractAvroSerDeser implements Serializer<D
             out.close();
             return bytes;
         } catch (IOException | RuntimeException e) {
-            // Avro serialization can throw AvroRuntimeException, NullPointerException,
-            // ClassCastException, etc
             throw new SerializationException("Error serializing Avro message", e);
         }
     }

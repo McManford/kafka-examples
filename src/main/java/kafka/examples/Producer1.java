@@ -10,11 +10,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.PartitionInfo;
+
 
 public class Producer1 extends Thread
 {
@@ -49,10 +49,13 @@ public class Producer1 extends Thread
         Date now = Calendar.getInstance().getTime();
         System.out.println(this.df.format(now) + " " + logTag + ": Mode: " + (isAsync ? "Async" : "Sync"));
 
-        //List<PartitionInfo> partitionInfoList = producer.partitionsFor(topic);
-        //for (PartitionInfo partInfo : partitionInfoList) {
-        //    System.out.println(this.df.format(now) + " " + logTag + ": Rack: " + partInfo.leader().rack());
-        //}
+        List<PartitionInfo> partitionInfoList = producer.partitionsFor(topic);
+        for (PartitionInfo partInfo : partitionInfoList) {
+            System.out.println(this.df.format(now) + " " + logTag + ": Partition: " + partInfo.partition());
+            System.out.println(this.df.format(now) + " " + logTag + ": Leader Id: " + partInfo.leader().id());
+            // rack added in 0.10.0.1
+            //System.out.println(this.df.format(now) + " " + logTag + ":Leader Rack: " + partInfo.leader().rack());
+        }
 
         int messageNo = 1;
         while (isRunning.get())
@@ -83,7 +86,8 @@ public class Producer1 extends Thread
                 {
                     e.printStackTrace();
                 }
-                catch (ExecutionException e) {
+                catch (ExecutionException e)
+                {
                     e.printStackTrace();
                 }
             }
