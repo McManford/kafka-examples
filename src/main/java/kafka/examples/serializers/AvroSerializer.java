@@ -1,11 +1,15 @@
 package kafka.examples.serializers;
 
+import kafka.examples.DatabusMessage;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
 
+import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.errors.SerializationException;
 
@@ -15,23 +19,12 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 
-public class AvroSerializer implements Serializer<Object>
+public class AvroSerializer extends AbstractAvroSerDeser implements Serializer<DatabusMessage>
 {
     private boolean isKey;
 
-    // Move to base class
-    protected static final byte MAGIC_BYTE = 0x0;
-    protected static final int idSize = 4;
-
     private final EncoderFactory encoderFactory = EncoderFactory.get();
-    private static final Schema schema;
 
-    static
-    {
-        Schema.Parser parser = new Schema.Parser();
-        String schemaString = "{\"type\" : \"bytes\"}";
-        schema = parser.parse(schemaString);
-    }
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey)
@@ -40,32 +33,35 @@ public class AvroSerializer implements Serializer<Object>
     }
 
     @Override
-    public byte[] serialize(String topic, Object record)
+    public byte[] serialize(String topic, DatabusMessage message)
     {
         Schema schema = null;
         // null needs to treated specially since the client most likely just wants to send
         // an individual null value instead of making the subject a null type. Also, null in
         // Kafka has a special meaning for deletion in a topic with the compact retention policy.
-        // Therefore, we will bypass schema registration and return a null value in Kafka, instead
+        // Therefore, we will bypass recordSchema registration and return a null value in Kafka, instead
         // of an Avro encoded null.
-        if (record == null) {
+        if (message == null) {
             return null;
         }
 
         try {
             schema = getSchema();
-            // int id = schemaRegistry.register(subject, schema);
+            GenericRecord databusValue = new GenericData.Record(schema);
+
+            databusValue.put("headers", message.getHeaders());
+            databusValue.put("payload", ByteBuffer.wrap(message.getPayload()));
+
+            // int id = schemaRegistry.register(subject, recordSchema);
             int id = 0;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(MAGIC_BYTE);
             out.write(ByteBuffer.allocate(idSize).putInt(id).array());
 
             BinaryEncoder encoder = encoderFactory.directBinaryEncoder(out, null);
-            DatumWriter<Object> writer;
+            DatumWriter<GenericRecord> writer = new GenericDatumWriter<>(schema);
 
-            writer = new GenericDatumWriter<>(schema);
-
-            writer.write(record, encoder);
+            writer.write(databusValue, encoder);
             encoder.flush();
 
             byte[] bytes = out.toByteArray();
@@ -82,10 +78,5 @@ public class AvroSerializer implements Serializer<Object>
     public void close()
     {
 
-    }
-
-    protected Schema getSchema()
-    {
-        return schema;
     }
 }

@@ -47,8 +47,12 @@ public class Consumer1 extends Thread
     ConsumerRecords<Integer, String> records = consumer.poll(1000);
     Date now = Calendar.getInstance().getTime();
     for (ConsumerRecord<Integer, String> record : records) {
-      System.out.println(this.df.format(now) + " " + logTag +
-              ": Received: " + record.value() + ", offset(" + record.offset() + ")");
+      int kafkaKey = record.key();
+      String kafkaValue = record.value();
+      System.out.println(this.df.format(now) + " " + logTag + ":" +
+              " Received: {" + kafkaKey + ":" + kafkaValue + "}" +
+              ", partition(" + record.partition() + ")" +
+              ", offset(" + record.offset() + ")");
     }
   }
 

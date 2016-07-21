@@ -64,7 +64,7 @@ public class Producer1 extends Thread
             if (isAsync)
             { // Send asynchronously
                 producer.send(new ProducerRecord<Integer, String>(topic, messageNo, messageValue),
-                        new DemoCallBack(startTime, messageNo, messageValue));
+                        new DemoCallBack(logTag, startTime, messageNo, messageValue));
             }
             else
             { // Send synchronously

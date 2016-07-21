@@ -1,6 +1,7 @@
 package kafka.examples;
 
 import kafka.examples.serializers.AvroSerializer;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -8,14 +9,13 @@ import org.apache.kafka.common.serialization.IntegerSerializer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ProducerAvro extends Thread
 {
-    private final KafkaProducer<Integer, Object> producer;
+    private final KafkaProducer<Integer, DatabusMessage> producer;
     private final String topic;
     private final Boolean isAsync;
     private final int messagesToSend;
@@ -29,8 +29,6 @@ public class ProducerAvro extends Thread
         Properties props = new Properties();
         props.put("bootstrap.servers", kprops.KAFKA_BOOTSTRAP_SERVERS);
         props.put("client.id", "DemoProducer");
-        props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-        props.put("value.serializer", "kafka.examples.serializers.AvroSerializer");
 
         final IntegerSerializer keySerializer = new IntegerSerializer();
         //avroKeySerializer.configure(avroProps, true);
@@ -57,26 +55,33 @@ public class ProducerAvro extends Thread
         int messageNo = 1;
         while(true)
         {
-            RecordMetadata metadata = null;
-            int messageKey = messageNo;
+            RecordMetadata metadata;
+            int kafkaKey = messageNo;
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("header1", "value1");
             String strValue = "Message_" + messageNo;
-            byte [] binaryValue = strValue.getBytes();
+            byte [] userPayload = strValue.getBytes();
+            DatabusMessage kafkaValue = new DatabusMessage(headers, userPayload);
+
+            ProducerRecord producerRecord = new ProducerRecord<>(topic, kafkaKey, kafkaValue);
+
             long startTime = System.currentTimeMillis();
             if (isAsync)
             { // Send asynchronously
-                producer.send(new ProducerRecord<>(topic, messageNo, binaryValue),
-                        new DemoCallBack(startTime, messageNo, strValue));
+                producer.send(producerRecord, new DemoCallBack(logTag, startTime, messageNo, strValue));
             }
             else
             { // Send synchronously
                 try
                 {
-                    metadata = producer.send(new ProducerRecord<>(topic, messageNo, strValue)).get();
+                    Future<RecordMetadata> f = producer.send(producerRecord);
+                    metadata = f.get();
 
                     long elapsedTime = System.currentTimeMillis() - startTime;
                     now = Calendar.getInstance().getTime();
-                    System.out.println(this.df.format(now) +
-                            " Producer1: Sent: {" + messageKey + ":" + strValue + "}" +
+                    System.out.println(this.df.format(now) + " " + logTag + ":" +
+                            " Sent: {" + kafkaKey + ":" + strValue + "}" +
                             ", partition(" + metadata.partition() + ")" +
                             ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
                 }

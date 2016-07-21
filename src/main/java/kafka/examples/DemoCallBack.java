@@ -11,13 +11,15 @@ import java.util.Date;
 
 public class DemoCallBack implements Callback {
 
+    private String logTag;
     private long startTime;
     private int messageKey;
     private String messageValue;
     private final DateFormat df;
 
-    public DemoCallBack(long startTime, int key, String message)
+    public DemoCallBack(String logTag, long startTime, int key, String message)
     {
+        this.logTag = logTag;
         this.startTime = startTime;
         this.messageKey = key;
         this.messageValue = message;
@@ -39,8 +41,8 @@ public class DemoCallBack implements Callback {
         if (metadata != null)
         {
             Date now = Calendar.getInstance().getTime();
-            System.out.println(this.df.format(now) +
-                    " Producer1: Sent: {" + messageKey + ":" + messageValue + "}" +
+            System.out.println(this.df.format(now) + " " + logTag + ":" +
+                    " Sent: {" + messageKey + ":" + messageValue + "}" +
                     ", partition(" + metadata.partition() + ")" +
                     ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
         }

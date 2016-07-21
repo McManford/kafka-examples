@@ -22,7 +22,7 @@ public class ConsumerAvro extends Thread
     AtomicBoolean isRunning = new AtomicBoolean(true);
     CountDownLatch shutdownLatch = new CountDownLatch(1);
 
-    private final KafkaConsumer<Integer, Object> consumer;
+    private final KafkaConsumer<Integer, DatabusMessage> consumer;
     private final String topic;
     private final DateFormat df;
     private final String logTag;
@@ -39,8 +39,6 @@ public class ConsumerAvro extends Thread
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "3000");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
         final IntegerDeserializer keyDeserializer = new IntegerDeserializer();
         //keyDeserializer.configure(avroProps, true);
@@ -54,19 +52,21 @@ public class ConsumerAvro extends Thread
         consumer.subscribe(Collections.singletonList(this.topic));
     }
 
-    public void doWork() {
-
-    }
-
     public void run() {
         while (isRunning.get()) {
             //System.out.println(logTag + ": Doing work...");
 
-            ConsumerRecords<Integer, Object> records = consumer.poll(1000);
+            ConsumerRecords<Integer, DatabusMessage> records = consumer.poll(1000);
             Date now = Calendar.getInstance().getTime();
-            for (ConsumerRecord<Integer, Object> record : records) {
-                System.out.println(this.df.format(now) + " " + logTag +
-                        ": Received: " + record.value() + ", offset(" + record.offset() + ")");
+            for (ConsumerRecord<Integer, DatabusMessage> record : records) {
+                int kafkaKey = record.key();
+                DatabusMessage kafkaValue = record.value();
+                byte [] userPayload = kafkaValue.getPayload();
+                String userValue = new String(userPayload);
+                System.out.println(this.df.format(now) + " " + logTag + ":" +
+                        " Received: {" + kafkaKey + ":" + userValue + "}" +
+                        ", partition(" + record.partition() + ")" +
+                        ", offset(" + record.offset() + ")");
             }
         }
         shutdownLatch.countDown();
