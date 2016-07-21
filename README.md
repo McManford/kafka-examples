@@ -1,4 +1,4 @@
-# Kakfa examples to be built against local build of Kafka client
+# Kakfa examples that can be built against local build of Kafka clients
 
 ## How to build
 
@@ -25,8 +25,14 @@ gradle clean jar
 
 ### Start Zookeeper and Kafka servers
 
-### Run example
+```shell
+./bin/zookeeper-server-start.sh config/zookeeper.properties
+./bin/kafka-server-start.sh config/server.properties
+```
+
+### Run examples
 
 ```shell
-java -jar build/libs/kafka-examples-0.0.1-dev.jar
+./bin/ConsumerProducerDemo1.sh async 5
+./bin/ConsumerProducerDemo2.sh sync 10
 ```
