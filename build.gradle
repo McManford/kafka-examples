@@ -10,15 +10,18 @@ version = '0.0.1-dev'
 sourceCompatibility = 1.8
 
 
-//--------------------
-// Dependencies
-//--------------------
+// Set kafkaClientsBuildLibDir and kafkaClientsVersion in your gradle.properties file
+// or define them here
+// def kafkaClientsBuildLibDir = '/Users/lafranll/prjs/secgit/databus-kafka/clients/build/libs/'
+// def kafkaClientsVersion = '0.9.0.2-SNAPSHOT'
+
+
 repositories {
-    flatDir(dirs: '/home/lafranll/prjs/kafka/clients/build/libs/')
+    flatDir(dirs: kafkaClientsBuildLibDir)
     mavenCentral()
 }
 dependencies {
-    compile 'org.apache.kafka:kafka-clients:0.10.0.1-SNAPSHOT'
+    compile "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
     compile 'net.jpountz.lz4:lz4:1.3.0'
     compile 'org.xerial.snappy:snappy-java:1.1.2.6'
     compile 'org.slf4j:slf4j-api:1.7.21'
@@ -46,5 +49,4 @@ jar {
 //--------------------
 // Util methods
 //--------------------
-task wrapper(type: Wrapper, description: 'Generate the Gradle Wrapper') { gradleVersion = '1.3' }
-
+task wrapper(type: Wrapper, description: 'Generate the Gradle Wrapper') { gradleVersion = '2.14' }
