@@ -14,13 +14,13 @@ public class ConsumerAssign3 extends Thread
   private final DateFormat df;
   private final String logTag;
 
-  public ConsumerAssign3(String topic)
+  public ConsumerAssign3(KafkaProperties kprops)
   {
     this.df = new SimpleDateFormat("HH:mm:ss");
     logTag = "ConsumerAssign3";
 
     Properties props = new Properties();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kprops.KAFKA_BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "DemoConsumer");
     //props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -31,7 +31,7 @@ public class ConsumerAssign3 extends Thread
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
     consumer = new KafkaConsumer<>(props);
-    this.topic = topic;
+    this.topic = kprops.TOPIC;
   }
 
   public void doWork() {

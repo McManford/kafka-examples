@@ -14,13 +14,13 @@ public class ConsumerAssign1 extends Thread
   private final DateFormat df;
   private final String logTag;
 
-  public ConsumerAssign1(String topic)
+  public ConsumerAssign1(KafkaProperties kprops)
   {
     this.df = new SimpleDateFormat("HH:mm:ss");
     logTag = "ConsumerAssign1";
 
     Properties props = new Properties();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kprops.KAFKA_BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "DemoConsumer");
     //props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -31,7 +31,7 @@ public class ConsumerAssign1 extends Thread
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
     consumer = new KafkaConsumer<>(props);
-    this.topic = topic;
+    this.topic = kprops.TOPIC;
   }
 
   public void doWork() {
@@ -54,10 +54,10 @@ public class ConsumerAssign1 extends Thread
       long firstOffset = partitionRecords.get(0).offset();
         System.out.println(this.df.format(now) + " " + logTag + ": firstOffset: " + firstOffset);
       //long lastOffset = partitionRecords.get(partitionRecords.size() - 1).offset();
-      consumer.commitSync(Collections.singletonMap(partition0, new OffsetAndMetadata(firstOffset + 2)));
+      //consumer.commitSync(Collections.singletonMap(partition0, new OffsetAndMetadata(firstOffset + 2)));
     }
 
-    //consumer.commitSync();
+    consumer.commitSync();
   }
 
   public void run() {

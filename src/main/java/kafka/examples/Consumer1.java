@@ -19,14 +19,12 @@ public class Consumer1 extends Thread
   private final DateFormat df;
   private final String logTag;
 
-  public Consumer1(String topic)
+  public Consumer1(KafkaProperties kprops)
   {
     logTag = "Consumer1";
 
-    KafkaProperties kprops = new KafkaProperties();
-
     Properties props = new Properties();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kprops.KAFKA_BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, kprops.GROUP_ID);
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kprops.AUTO_OFFSET_RESET);
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
@@ -37,7 +35,7 @@ public class Consumer1 extends Thread
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
     consumer = new KafkaConsumer<>(props);
-    this.topic = topic;
+    this.topic = kprops.TOPIC;
     this.df = new SimpleDateFormat("HH:mm:ss");
 
     consumer.subscribe(Collections.singletonList(this.topic));

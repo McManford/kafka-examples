@@ -1,43 +1,43 @@
 package kafka.examples;
 
+import kafka.examples.serializers.AvroSerializer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.PartitionInfo;
-
-public class Producer1 extends Thread
+public class ProducerAvro extends Thread
 {
-    AtomicBoolean isRunning = new AtomicBoolean(true);
-    CountDownLatch shutdownLatch = new CountDownLatch(1);
-
-    private final KafkaProducer<Integer, String> producer;
+    private final KafkaProducer<Integer, Object> producer;
     private final String topic;
     private final Boolean isAsync;
     private final int messagesToSend;
     private final DateFormat df;
     private final String logTag;
 
-    public Producer1(KafkaProperties kprops, Boolean isAsync, int messagesToSend)
+    public ProducerAvro(KafkaProperties kprops, Boolean isAsync, int messagesToSend)
     {
-        logTag = "Producer1";
+        logTag = "ProducerAvro";
 
         Properties props = new Properties();
         props.put("bootstrap.servers", kprops.KAFKA_BOOTSTRAP_SERVERS);
         props.put("client.id", "DemoProducer");
         props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producer = new KafkaProducer<Integer, String>(props);
+        props.put("value.serializer", "kafka.examples.serializers.AvroSerializer");
+
+        final IntegerSerializer keySerializer = new IntegerSerializer();
+        //avroKeySerializer.configure(avroProps, true);
+        final AvroSerializer avroValueSerializer = new AvroSerializer();
+        //avroValueSerializer.configure(avroProps, false);
+
+        producer = new KafkaProducer<>(props, keySerializer, avroValueSerializer);
         this.topic = kprops.TOPIC;
         this.isAsync = isAsync;
         this.messagesToSend = messagesToSend;
@@ -55,27 +55,28 @@ public class Producer1 extends Thread
         //}
 
         int messageNo = 1;
-        while (isRunning.get())
+        while(true)
         {
             RecordMetadata metadata = null;
             int messageKey = messageNo;
-            String messageValue = "Message_" + messageNo;
+            String strValue = "Message_" + messageNo;
+            byte [] binaryValue = strValue.getBytes();
             long startTime = System.currentTimeMillis();
             if (isAsync)
             { // Send asynchronously
-                producer.send(new ProducerRecord<Integer, String>(topic, messageNo, messageValue),
-                        new DemoCallBack(startTime, messageNo, messageValue));
+                producer.send(new ProducerRecord<>(topic, messageNo, binaryValue),
+                        new DemoCallBack(startTime, messageNo, strValue));
             }
             else
             { // Send synchronously
                 try
                 {
-                    metadata = producer.send(new ProducerRecord<Integer, String>(topic, messageNo, messageValue)).get();
+                    metadata = producer.send(new ProducerRecord<>(topic, messageNo, strValue)).get();
 
                     long elapsedTime = System.currentTimeMillis() - startTime;
                     now = Calendar.getInstance().getTime();
                     System.out.println(this.df.format(now) +
-                            " Producer1: Sent: {" + messageKey + ":" + messageValue + "}" +
+                            " Producer1: Sent: {" + messageKey + ":" + strValue + "}" +
                             ", partition(" + metadata.partition() + ")" +
                             ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
                 }
@@ -100,18 +101,6 @@ public class Producer1 extends Thread
             {
                 e.printStackTrace();
             }
-        }
-
-        shutdownLatch.countDown();
-    }
-
-    public void shutdown() {
-        try {
-            isRunning.set(false);
-            this.interrupt();
-            shutdownLatch.await();
-        } catch (InterruptedException e) {
-            throw new Error("Interrupted when shutting down consumer worker thread.");
         }
     }
 }

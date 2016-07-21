@@ -1,17 +1,17 @@
 package kafka.examples;
 
 
-public class ConsumerProducerDemo1 {
+public class ConsumerProducerAvroDemo1 {
     public static void main(String[] args)
     {
         boolean isAsync = args.length == 0 || !args[0].trim().equalsIgnoreCase("sync");
         int messagesToProduce = args.length == 0 ? -1 : Integer.parseInt(args[1].trim());
 
-        System.out.println("ConsumerProducerDemo1");
+        System.out.println("ConsumerProducerAvroDemo1");
 
         KafkaProperties kprops = new KafkaProperties();
 
-        Consumer1 consumerThread = new Consumer1(kprops);
+        ConsumerAvro consumerThread = new ConsumerAvro(kprops);
         consumerThread.start();
 
         try {
@@ -20,10 +20,7 @@ public class ConsumerProducerDemo1 {
             e.printStackTrace();
         }
 
-
-        Producer1 producerThread = new Producer1(kprops, isAsync, messagesToProduce);
+        ProducerAvro producerThread = new ProducerAvro(kprops, isAsync, messagesToProduce);
         producerThread.start();
-
-
     }
 }
