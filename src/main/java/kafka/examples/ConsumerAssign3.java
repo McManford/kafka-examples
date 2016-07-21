@@ -37,7 +37,7 @@ public class ConsumerAssign3 extends Thread
 
     public void doWork() {
         //System.out.println(logTag + ": Doing work...");
-        TopicPartition partition0 = new TopicPartition(this.topic, 0);
+        TopicPartition partition0 = new TopicPartition(this.topic, 2);
         consumer.assign(Arrays.asList(partition0));
 
         ConsumerRecords<Integer, String> records = consumer.poll(1000);

@@ -18,8 +18,8 @@ public class ConsumerProducerDemo3
         ConsumerAssign2 consumer2Thread = new ConsumerAssign2(kprops);
         consumer2Thread.start();
 
-        //ConsumerAssign3 consumer3Thread = new ConsumerAssign3(kprops);
-        //consumer3Thread.start();
+        ConsumerAssign3 consumer3Thread = new ConsumerAssign3(kprops);
+        consumer3Thread.start();
 
         try {
             Thread.sleep(0);
