@@ -21,10 +21,7 @@ public class ConsumerProducerDemo1
             e.printStackTrace();
         }
 
-
         Producer1 producerThread = new Producer1(kprops, isAsync, messagesToProduce);
         producerThread.start();
-
-
     }
 }

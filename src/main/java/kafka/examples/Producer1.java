@@ -37,6 +37,8 @@ public class Producer1 extends Thread
         props.put("client.id", "DemoProducer");
         props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("max.block.ms", 10000);
+        props.put("request.timeout.ms", 20000);
         producer = new KafkaProducer<Integer, String>(props);
         this.topic = kprops.TOPIC;
         this.isAsync = isAsync;
@@ -88,7 +90,11 @@ public class Producer1 extends Thread
                 }
                 catch (ExecutionException e)
                 {
-                    e.printStackTrace();
+                    System.out.println(this.df.format(now) + " " + logTag + ":" +
+                            " ERROR sending message. " +
+                            "{" + messageKey + ":" + messageValue + "}" +
+                            " Ex: " + e.getMessage());
+                    // e.printStackTrace();
                 }
             }
 

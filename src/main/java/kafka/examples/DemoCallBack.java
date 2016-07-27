@@ -50,7 +50,11 @@ public class DemoCallBack implements Callback {
         else
         {
             System.out.println(this.df.format(now) + " " + logTag + ":" +
-                    " ERROR sending message. Ex: " + exception.getMessage());
+                    " ERROR sending message. " +
+                    "{" + messageKey + ":" + messageValue + "}" +
+                    ", partition(" + metadata.partition() + ")" +
+                    ", offset(" + metadata.offset() + ")" +
+                    " Ex: " + exception.getMessage());
             exception.printStackTrace();
         }
     }
