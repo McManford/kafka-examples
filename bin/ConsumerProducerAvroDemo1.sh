@@ -1,7 +1,7 @@
 #!/bin/bash
 
-base_dir=$(dirname $0)/..
+if [ "x$KAFKA_HEAP_OPTS" = "x" ]; then
+    export KAFKA_HEAP_OPTS="-Xmx512M"
+fi
 
-CLASSPATH=$CLASSPATH:$base_dir/build/libs
-
-java kafka.examples.ConsumerProducerAvroDemo1 $@
+exec $(dirname $0)/run-class.sh kafka.examples.ConsumerProducerAvroDemo1 "$@"
