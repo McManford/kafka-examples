@@ -15,24 +15,13 @@ public class ConsumerAssign2 extends Thread
     private final DateFormat df;
     private final String logTag;
 
-    public ConsumerAssign2(KafkaProperties kprops)
+    public ConsumerAssign2(Properties props)
     {
         this.df = new SimpleDateFormat("HH:mm:ss");
         logTag = "ConsumerAssign2";
 
-        Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kprops.KAFKA_BOOTSTRAP_SERVERS);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "DemoConsumer");
-        //props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        //props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, "50");
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-
         consumer = new KafkaConsumer<>(props);
-        this.topic = kprops.TOPIC;
+        this.topic = props.getProperty("topic");
     }
 
     public void doWork() {

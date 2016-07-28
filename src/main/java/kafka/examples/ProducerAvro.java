@@ -24,13 +24,9 @@ public class ProducerAvro extends Thread
     private final DateFormat df;
     private final String logTag;
 
-    public ProducerAvro(KafkaProperties kprops, Boolean isAsync, int messagesToSend)
+    public ProducerAvro(Properties props, Boolean isAsync, int messagesToSend)
     {
         logTag = "ProducerAvro";
-
-        Properties props = new Properties();
-        props.put("bootstrap.servers", kprops.KAFKA_BOOTSTRAP_SERVERS);
-        props.put("client.id", "DemoProducer");
 
         final IntegerSerializer keySerializer = new IntegerSerializer();
         //avroKeySerializer.configure(avroProps, true);
@@ -38,7 +34,7 @@ public class ProducerAvro extends Thread
         //avroValueSerializer.configure(avroProps, false);
 
         producer = new KafkaProducer<>(props, keySerializer, avroValueSerializer);
-        this.topic = kprops.TOPIC;
+        this.topic = props.getProperty("topic");
         this.isAsync = isAsync;
         this.messagesToSend = messagesToSend;
         this.df = new SimpleDateFormat("HH:mm:ss");
