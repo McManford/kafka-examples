@@ -8,6 +8,11 @@ if [ $# -ne 1 ]; then
 fi
 
 out_dir=$1
+if [ ! -d ${out_dir} ]; then
+    echo "output-dir ${out_dir} does not exist"
+    exit 1
+fi
+
 echo "##### Creating keystores and trustores in ${out_dir}"
 
 password="test1234"
@@ -25,9 +30,6 @@ server_cn="kafka-1"
 client_cn="kafka-1-cli"
 keytool_alias_server="kafka-1"
 keytool_alias_client="kafka-1"
-
-rm -rf ${out_dir}
-mkdir -p ${out_dir}
 
 # Generate CA key and certificate
 openssl req -new -x509 -keyout ${out_dir}/ca-key -out ${out_dir}/ca-cert -days $validity -passout pass:$password -subj "/CN=$server_cn/O=$o/L=$l/ST=$st/C=$c"
