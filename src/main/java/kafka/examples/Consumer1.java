@@ -45,7 +45,7 @@ public class Consumer1 extends Thread
             Date now = Calendar.getInstance().getTime();
             int recordsCount = records.count();
             messagesReceived += recordsCount;
-            System.out.println("poll returned " + recordsCount + " records");
+            //System.out.println("poll returned " + recordsCount + " records");
             if (recordsCount > 0) {
                gotData = true;
             }

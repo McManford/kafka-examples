@@ -2,8 +2,6 @@ package kafka.examples;
 
 import java.util.Properties;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-
 
 public class ConsumerProducerDemo2
 {
@@ -26,16 +24,17 @@ public class ConsumerProducerDemo2
         prodProps.put("request.timeout.ms", 20000);
 
         Properties consProps = new Properties();
-        consProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kprops.KAFKA_BOOTSTRAP_SERVERS);
+        consProps.put("bootstrap.servers", kprops.KAFKA_BOOTSTRAP_SERVERS);
         consProps.put("topic", kprops.TOPIC);
-        consProps.put(ConsumerConfig.GROUP_ID_CONFIG, kprops.GROUP_ID);
-        consProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kprops.AUTO_OFFSET_RESET);
-        consProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-        consProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        consProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "3000");
-        consProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        consProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
-        consProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        consProps.put("group.id", kprops.GROUP_ID);
+        consProps.put("auto.offset.reset", kprops.AUTO_OFFSET_RESET);
+        consProps.put("enable.auto.commit", "true");
+        consProps.put("auto.commit.interval.ms", "1000");
+        consProps.put("heartbeat.interval.ms", "3000");
+        consProps.put("session.timeout.ms", "30000");
+        consProps.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        consProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
 
         Consumer1 consumer1Thread = new Consumer1(consProps);
         consumer1Thread.start();
