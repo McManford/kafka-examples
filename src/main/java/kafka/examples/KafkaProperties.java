@@ -5,7 +5,7 @@ public class KafkaProperties {
     public static final String TOPIC2 = "topic2";
     public static final String TOPIC3 = "topic3";
     //public static final String KAFKA_BOOTSTRAP_SERVERS = "10.218.86.43:9092 10.218.86.237:9092";
-    public static final String KAFKA_BOOTSTRAP_SERVERS = "kafka-1:9092 kafka-2:9092";
+    public static final String KAFKA_BOOTSTRAP_SERVERS = "kafka-1:9092";
     public static final int KAFKA_PRODUCER_BUFFER_SIZE = 64 * 1024;
     public static final int CONNECTION_TIMEOUT = 100000;
     final static int RECONNECT_INTERVAL = 10000;
