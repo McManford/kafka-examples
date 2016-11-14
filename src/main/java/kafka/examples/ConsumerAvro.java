@@ -56,8 +56,9 @@ public class ConsumerAvro extends Thread
                 String userValue = new String(userPayload);
                 System.out.println(this.df.format(now) + " " + logTag + ":" +
                         " Received: {" + kafkaKey + ":" + userValue + "}" +
-                        ", partition(" + record.partition() + ")" +
-                        ", offset(" + record.offset() + ")");
+                        ", topic: " + record.topic() +
+                        ", partition: " + record.partition() +
+                        ", offset: " + record.offset());
             }
         }
         shutdownLatch.countDown();

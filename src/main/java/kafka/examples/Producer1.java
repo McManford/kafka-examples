@@ -74,8 +74,10 @@ public class Producer1 extends Thread
                     now = Calendar.getInstance().getTime();
                     System.out.println(this.df.format(now) +
                             " Producer1: Sent: {" + messageKey + ":" + messageValue + "}" +
-                            ", partition(" + metadata.partition() + ")" +
-                            ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
+                            ", topic: " + metadata.topic() +
+                            ", partition: " + metadata.partition() +
+                            ", offset: " + metadata.offset() +
+                            ", elapsedTime: " + elapsedTime + " ms");
                 }
                 catch (InterruptedException e)
                 {

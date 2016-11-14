@@ -85,8 +85,10 @@ public class ProducerAvro extends Thread
                     now = Calendar.getInstance().getTime();
                     System.out.println(this.df.format(now) + " " + logTag + ":" +
                             " Sent: {" + kafkaKey + ":" + strValue + "}" +
-                            ", partition(" + metadata.partition() + ")" +
-                            ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
+                            ", topic: " + metadata.topic() +
+                            ", partition: " + metadata.partition() +
+                            ", offset: " + metadata.offset() +
+                            ", elapsedTime: " + elapsedTime + " ms");
                 }
                 catch (InterruptedException e)
                 {

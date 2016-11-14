@@ -37,8 +37,9 @@ public class ConsumerAssign3 extends Thread
             String kafkaValue = record.value();
             System.out.println(this.df.format(now) + " " + logTag + ":" +
                     " Received: {" + kafkaKey + ":" + kafkaValue + "}" +
-                    ", partition(" + record.partition() + ")" +
-                    ", offset(" + record.offset() + ")");
+                    ", topic: " + record.topic() +
+                    ", partition: " + record.partition() +
+                    ", offset: " + record.offset());
         }
 
         List<ConsumerRecord<Integer, String>> partitionRecords = records.records(partition0);

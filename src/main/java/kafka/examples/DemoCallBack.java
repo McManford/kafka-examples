@@ -41,20 +41,21 @@ public class DemoCallBack implements Callback {
         Date now = Calendar.getInstance().getTime();
         if (metadata != null)
         {
-
             System.out.println(this.df.format(now) + " " + logTag + ":" +
                     " Sent: {" + messageKey + ":" + messageValue + "}" +
-                    ", partition(" + metadata.partition() + ")" +
-                    ", offset(" + metadata.offset() + ") in " + elapsedTime + " ms");
+                    ", topic: " + metadata.topic() +
+                    ", partition: " + metadata.partition() +
+                    ", offset: " + metadata.offset() +
+                    ", elapsedTime: " + elapsedTime + " ms");
         }
         else
         {
             System.out.println(this.df.format(now) + " " + logTag + ":" +
                     " ERROR sending message. " +
                     "{" + messageKey + ":" + messageValue + "}" +
-                    ", partition(" + metadata.partition() + ")" +
-                    ", offset(" + metadata.offset() + ")" +
-                    " Ex: " + exception.getMessage());
+                    ", partition: " + metadata.partition() +
+                    ", offset: " + metadata.offset() +
+                    ", Ex: " + exception.getMessage());
             exception.printStackTrace();
         }
     }
