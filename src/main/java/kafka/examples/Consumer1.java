@@ -20,7 +20,7 @@ public class Consumer1 extends Thread
     private final String topic;
     private final DateFormat df;
     private final String logTag;
-    private boolean noMoreData = false;
+    private boolean moreData = true;
     private boolean gotData = false;
     private int messagesReceived = 0;
     AtomicBoolean isRunning = new AtomicBoolean(true);
@@ -39,7 +39,7 @@ public class Consumer1 extends Thread
 
     public void getMessages() {
         System.out.println("Getting messages...");
-        while (noMoreData == false) {
+        while (moreData == true) {
             //System.out.println(logTag + ": polling...");
             ConsumerRecords<Integer, String> records = consumer.poll(1000);
             Date now = Calendar.getInstance().getTime();
@@ -51,7 +51,7 @@ public class Consumer1 extends Thread
             }
 
             if (gotData && recordsCount == 0) {
-                noMoreData = true;
+                moreData = false;
             }
 
             for (ConsumerRecord<Integer, String> record : records) {
