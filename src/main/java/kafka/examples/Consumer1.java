@@ -39,8 +39,9 @@ public class Consumer1 extends Thread
 
     public void getMessages() {
         System.out.println("Getting messages...");
+        consumer.listTopics();
         while (moreData == true) {
-            //System.out.println(logTag + ": polling...");
+            System.out.println(logTag + ": polling...");
             ConsumerRecords<Integer, String> records = consumer.poll(1000);
             Date now = Calendar.getInstance().getTime();
             int recordsCount = records.count();

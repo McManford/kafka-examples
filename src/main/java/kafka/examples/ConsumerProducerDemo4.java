@@ -1,17 +1,16 @@
 package kafka.examples;
 
 import java.util.Properties;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 
 
-public class ConsumerProducerDemo1
+public class ConsumerProducerDemo4
 {
     public static void main(String[] args)
     {
         boolean isAsync = args.length == 0 || !args[0].trim().equalsIgnoreCase("sync");
-        int messagesToProduce = args.length == 0 ? -1 : Integer.parseInt(args[1].trim());
+        int messagesToProduce = args.length < 2 ? -1 : Integer.parseInt(args[1].trim());
 
-        System.out.println("ConsumerProducerDemo1");
+        System.out.println("ConsumerProducerDemo4");
 
         KafkaProperties kprops = new KafkaProperties();
 
@@ -29,29 +28,34 @@ public class ConsumerProducerDemo1
         consProps.put("topic", kprops.TOPIC);
         consProps.put("group.id", kprops.GROUP_ID);
         consProps.put("auto.offset.reset", kprops.AUTO_OFFSET_RESET);
-        consProps.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, "2000");
-        consProps.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "3000");
-        consProps.put(ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG, "2000");
-        consProps.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, "2000");
-        consProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "1000");
-        consProps.put("session.timeout.ms", "1500");
-        consProps.put("enable.auto.commit", "true");
+        consProps.put("enable.auto.commit", "false");
         consProps.put("auto.commit.interval.ms", "1000");
-        consProps.put("heartbeat.interval.ms", "1000");
-
+        consProps.put("heartbeat.interval.ms", "3000");
+        consProps.put("session.timeout.ms", "30000");
         consProps.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         consProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        //consProps.put("max.partition.fetch.bytes", "50");
 
-        //Consumer1 consumerThread = new Consumer1(consProps);
-        //consumerThread.start();
+        Producer1 producerThread = new Producer1(prodProps, isAsync, messagesToProduce);
+        producerThread.start();
 
         try {
-            Thread.sleep(0);
+            Thread.sleep(30000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        Producer1 producerThread = new Producer1(prodProps, isAsync, messagesToProduce);
-        producerThread.start();
+        ConsumerRebalanceListener1 consumer1Thread = new ConsumerRebalanceListener1(consProps);
+        consumer1Thread.start();
+
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ConsumerRebalanceListener2 consumer2Thread = new ConsumerRebalanceListener2(consProps);
+        consumer2Thread.start();
     }
 }

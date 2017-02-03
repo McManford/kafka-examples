@@ -14,7 +14,7 @@ public class ProducerMain
         System.out.println("ProducerMain");
 
         Properties props = new Properties();
-        props.put("topic", "topic1");
+        props.put("topic", "topic3");
         props.put("bootstrap.servers", "localhost:9092");
         props.put("client.id", "DemoProducer");
         props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
@@ -28,7 +28,7 @@ public class ProducerMain
         //props.put("ssl.keystore.password", "test1234");
         //props.put("ssl.key.password", "test1234");
 
-        Producer1 producerThread = new Producer1(props, isAsync, messagesToProduce);
+        ProducerPartition producerThread = new ProducerPartition(props, isAsync, messagesToProduce);
         producerThread.start();
     }
 
