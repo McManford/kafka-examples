@@ -18,7 +18,12 @@ public class ConsumerMain
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("heartbeat.interval.ms", "3000");
-        props.put("session.timeout.ms", "30000");
+        props.put("session.timeout.ms", "10000");
+        props.put("max.poll.interval.ms", "10000");
+        props.put("fetch.max.wait.ms", "10000");
+        props.put("metadata.max.age.ms", "10000");
+        props.put("request.timeout.ms", "10500");
+        props.put("connections.max.idle.ms", "10000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
@@ -29,8 +34,17 @@ public class ConsumerMain
         //props.put("ssl.keystore.password", "test1234");
         //props.put("ssl.key.password", "test1234");
 
-        Consumer1 consumerThread = new Consumer1(props);
+        Consumer2 consumerThread = new Consumer2(props);
         consumerThread.start();
+
+//        try {
+//            while (true) {
+//                Thread.sleep(20000);
+//                consumerThread.wakeUp();
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     protected static String getCertsDir() {

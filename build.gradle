@@ -4,6 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'project-reports'
+apply plugin: 'application'
 
 group = 'kafka.examples'
 version = '0.0.1-dev'
@@ -40,11 +41,23 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'kafka.examples.KafkaConsumerProducerDemo'
+        attributes 'Main-Class': 'kafka.examples.ConsumerProducerDemo1'
     }
     
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+mainClassName = 'kafka.examples.ConsumerProducerDemo1'
+
+task myRun(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "kafka.examples.ConsumerProducerDemo1"
+    //args "arg1", "arg2"
+    //args project.getProperty('arg1') project.getProperty('arg2')
+    if ( project.hasProperty("appArgs") ) {
+        args Eval.me(appArgs)
     }
 }
 

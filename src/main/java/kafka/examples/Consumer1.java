@@ -39,10 +39,14 @@ public class Consumer1 extends Thread
 
     public void getMessages() {
         System.out.println("Getting messages...");
-        consumer.listTopics();
+        // System.out.println("Getting topics...");
+        // consumer.listTopics();
         while (moreData == true) {
+            // Used to detect brokers are down after request.timeout.ms
+            System.out.println("Getting topics...");
+            consumer.partitionsFor(this.topic);
             System.out.println(logTag + ": polling...");
-            ConsumerRecords<Integer, String> records = consumer.poll(1000);
+            ConsumerRecords<Integer, String> records = consumer.poll(500);
             Date now = Calendar.getInstance().getTime();
             int recordsCount = records.count();
             messagesReceived += recordsCount;

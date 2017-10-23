@@ -42,7 +42,8 @@ public class Producer1 extends Thread
     public void run() {
 
         Date now = Calendar.getInstance().getTime();
-        System.out.println(this.df.format(now) + " " + logTag + ": Mode: " + (isAsync ? "Async" : "Sync"));
+        System.out.println(this.df.format(now) + " " + logTag + ": Mode: " + (isAsync ? "Async" : "Sync") +
+        ", messagesToSend: " + this.messagesToSend);
 
         List<PartitionInfo> partitionInfoList = producer.partitionsFor(topic);
         for (PartitionInfo partInfo : partitionInfoList) {
